@@ -23,8 +23,6 @@ SSH_PORT="22"
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
-# Your changes go below this line:
-# ---8<---------------------------
 
 # Allow all inbound and outbound traffic; all protocols, states,
 # addresses, interfaces, and ports (it's like no firewall at all!):
@@ -71,7 +69,5 @@ $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport 22 -j A
 # *IGNORE* all other traffic
 
 
-# No changes below this line:
-# ---8<---------------------------
 echo "done."
 
