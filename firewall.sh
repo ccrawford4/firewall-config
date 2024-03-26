@@ -16,6 +16,7 @@ $IPTABLES --flush
 ETH="eth1"
 SERVER_ADDR="172.30.0.12"
 SSH_PORT="22"
+APACHE_PORT="80"
 
 
 # all traffic on the loopback device (127.0.0.1 -- localhost) is OK.
@@ -53,7 +54,10 @@ $IPTABLES -t filter -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 # 1. allow inbound traffic to the OpenSSH, Apache2, and MySQL servers. (MySQL traffic only allowed from client.)
 
 # Rule One -> Accept: inbound, tcp connection, OpenSSH server (port 22)
-$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport 22 -j ACCEPT
+$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport $SSH_PORT -j ACCEPT
+
+# Rule Two -> Accept: inbound, tcp connection, Apache2 server (port 80)
+$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport $APACHE_PORT -j ACCEPT
 
 # 2. allow new outbound tcp traffic to remote systems running OpenSSH,
 # Apache, and SMTP servers (on their standard ports).
