@@ -19,6 +19,8 @@ CLIENT_ADDR="10.0.1.2"
 SSH_PORT="22"
 APACHE_PORT="80"
 MYSQL_PORT="3306"
+UDP_LOW="10000"
+UDP_HIGH="10005"
 
 
 # all traffic on the loopback device (127.0.0.1 -- localhost) is OK.
@@ -63,6 +65,11 @@ $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport $APACHE
 
 # Rule Three -> Accept: inbound, tcp connection, MySQL Server (port 3306) host = client
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp -s $CLIENT_ADDR --dport $MYSQL_PORT -j ACCEPT
+
+# TO DOUBLE CHECK
+#UDP Rule -> Accept: inbound, udp connection, ports 10000 - 10005, from host client
+$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_LOW:$UDP_HIGH -j ACCEPT
+
 
 # 2. allow new outbound tcp traffic to remote systems running OpenSSH,
 # Apache, and SMTP servers (on their standard ports).
