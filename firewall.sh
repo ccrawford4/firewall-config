@@ -19,8 +19,10 @@ CLIENT_ADDR="10.0.1.2"
 SSH_PORT="22"
 APACHE_PORT="80"
 MYSQL_PORT="3306"
-UDP_LOW="10000"
-UDP_HIGH="10005"
+UDP_IN_LOW="10000"
+UDP_IN_HIGH="10005"
+UDP_OUT_LOW="10006"
+UDP_OUT_HIGH="10010"
 SMTP_PORT="587"
 
 
@@ -67,9 +69,7 @@ $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport $APACHE
 # Rule Three -> Accept: inbound, tcp connection, MySQL Server (port 3306) host = client
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp -s $CLIENT_ADDR --dport $MYSQL_PORT -j ACCEPT
 
-# TODO: DOUBLE CHECK
-#UDP Rule -> Accept: inbound, udp connection, ports 10000 - 10005, from host client
-$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_LOW:$UDP_HIGH -j ACCEPT
+
 
 
 # 2. allow new outbound tcp traffic to remote systems running OpenSSH,
@@ -85,6 +85,13 @@ $IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p tcp --dport $SMTP_
 # 3. allow new inbound udp traffic to ports 10000-10005, and new outbound
 # udp traffic to ports 10006-10010. Inbound and outbound UDP traffic should be limited to being from client (for input) or to client (for output).
 # (You can get client's address from DETERLab.)
+
+# TODO: DOUBLE CHECK
+#UDP Rule -> Accept: inbound, udp connection, ports 10000 - 10005, from host client
+$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_IN_LOW:$UDP_IN_HIGH -j ACCEPT
+
+# UDP Rule -> Accept outbound, udp connection, ports 10006 - 10010 to client
+$IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_OUT_LOW:$UDP_OUT_HIGH -j ACCEPT
 
 # 4. allow the server to send and respond to ICMP pings.
 
