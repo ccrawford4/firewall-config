@@ -94,6 +94,8 @@ $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p udp -s $CLIENT_ADDR
 $IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_OUT_LOW:$UDP_OUT_HIGH -j ACCEPT
 
 # 4. allow the server to send and respond to ICMP pings.
+$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p icmp --icmp-type echo-request -j ACCEPT
+$IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p icmp --icmp-type echo-reply -j ACCEPT
 
 # OTHER CONNECTIONS
 # -----------------
