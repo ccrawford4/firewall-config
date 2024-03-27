@@ -100,6 +100,9 @@ $IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p icmp --icmp-type e
 # OTHER CONNECTIONS
 # -----------------
 # *IGNORE* all other traffic
+$IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -j DROP
+$IPTABLES -t filter -o $ETH -A FORWARD -m state --state NEW -j DROP
+$IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -j DROP
 
 
 echo "done."
