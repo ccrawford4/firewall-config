@@ -39,7 +39,6 @@ $IPTABLES -t filter -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 # ---------------
 # Rules here allow NEW traffic:
 # 1. allow inbound traffic to the OpenSSH, Apache2, and MySQL servers. (MySQL traffic only allowed from client.)
-
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport $SSH_PORT -j ACCEPT
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp --dport $APACHE_PORT -j ACCEPT
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p tcp -s $CLIENT_ADDR --dport $MYSQL_PORT -j ACCEPT
@@ -56,7 +55,7 @@ $IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p tcp --dport $SMTP_
 # udp traffic to ports 10006-10010. Inbound and outbound UDP traffic should be limited to being from client (for input) or to client (for output).
 
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_IN_LOW:$UDP_IN_HIGH -j ACCEPT
-$IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p udp -s $CLIENT_ADDR --dport $UDP_OUT_LOW:$UDP_OUT_HIGH -j ACCEPT
+$IPTABLES -t filter -o $ETH -A OUTPUT -m state --state NEW -p udp -d $CLIENT_ADDR --dport $UDP_OUT_LOW:$UDP_OUT_HIGH -j ACCEPT
 
 # 4. allow the server to send and respond to ICMP pings.
 $IPTABLES -t filter -i $ETH -A INPUT -m state --state NEW -p icmp --icmp-type echo-request -j ACCEPT
