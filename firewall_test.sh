@@ -13,7 +13,7 @@ UDP_OUT_LOW="10006"
 UDP_OUT_HIGH="10010"
 SMTP_PORT="587"
 
-if [ "$#" -ne 1]; then
+if [ "$#" -ne 1 ]; then
 	echo "Usage: $0 [1 for server | 0 for client]"
 	exit 1
 fi
@@ -41,7 +41,7 @@ test_port() {
 	   fi
         else
             if nc -zvu $SERVER_ADDR $port; then
-		    echo "Warning: UDP port $port might be accepting connections." > &2
+		    echo "Warning: UDP port $port might be accepting connections." >&2
   	    fi
 	fi
     elif [ "$mode" == "server" ]; then
@@ -54,7 +54,6 @@ test_port() {
 }
 
 # Main logic
-mode=$1 # 'server' or 'client'
 
 if [ "$mode" != "server" ] && [ "$mode" != "client" ]; then
     echo "Usage: $0 [server|client]"
@@ -83,20 +82,24 @@ is_excluded() {
 		((range_idx++))
 	done
 
-	return 1 # Return Fals
+	return 1 # Return False
 }
 
 
-for ((port=1; port <= 100011; port++)); do
+for ((port=1; port <= 10011; port++)); do
 	if ! is_excluded "$port"; then
 		echo "Testing TCP port: $port"
-		test_port $mode tcp $port &
+		test_port "$mode" tcp "$port"
+		status=$?
+		if [[ $status -eq 1 ]]; then
+			echo "ERROR! FOUND A TCP PORT INCORRECLTY ACCEPTING INBOUND CONNECTIONS"
+			return 1
+		fi 
 
 		echo "Testing UDP port: $port"
-		test_port $mode udp $port &
+		test_port $mode udp $port &		
 	fi
 done
 
 wait
 echo "Testing complete."
-
